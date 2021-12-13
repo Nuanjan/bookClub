@@ -23,8 +23,44 @@
 </head>
 <body>
     <div class="container"> <!-- Beginning of Container -->
-        <h1><c:out value="${book.title}"></c:out></h1>
-        <h4><c:out value="${book.thoughts}"></c:out></h4>
+    	<div class="row">
+    		<div class="col">
+		        <h1><c:out value="${book.title}"></c:out></h1>
+		        <div>
+		        	<h4>
+		        	<c:choose>
+			        	<c:when test="${sessionScope.current_user == 'true'}">
+			        		<span>You </span>
+			        	</c:when>
+			        	<c:when test="${sessionScope.current_user == 'false'}">
+				        	<c:out value="${book.user.userName}"></c:out> 
+			        	</c:when>
+		        	</c:choose>
+		        	read 
+		        	<c:out value="${book.title }"></c:out>
+		        	 by 
+		        	 <c:out value="${book.author}"></c:out> 
+		        	 </h4>
+		        	 <h5>
+		        	 Here are 
+		        	 <c:choose>
+			        	<c:when test="${sessionScope.current_user == 'true'}">
+			        		<span>You </span>
+			        	</c:when>
+			        	<c:when test="${sessionScope.current_user == 'false'}">
+				        	<c:out value="${book.user.userName}"></c:out> 
+			        	</c:when>
+		        	</c:choose>
+		        	  thoughts:
+		        	 </h5>
+		        	 <hr />
+		        </div>
+		        <h5><c:out value="${book.thoughts}"></c:out></h5>
+    		</div>
+    		<div class="col">
+    			<a href="/books">back to the shelves</a>
+    		</div>
+    	</div>
     </div> <!-- End of Container -->
 </body>
 </html>

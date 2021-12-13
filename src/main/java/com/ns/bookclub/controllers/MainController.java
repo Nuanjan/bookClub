@@ -95,8 +95,17 @@ public class MainController {
     }
     
     @GetMapping("/books/{id}")
-    public String getBook(@PathVariable("id") Long id, Model model) {
+    public String getBook(@PathVariable("id") Long id, Model model, HttpSession session) {
     	Book book = bookServ.findBook(id);
+    	User tempUser = book.getUser();
+    	Long currentUserId = (Long)session.getAttribute("user_id");
+    	System.out.println("temp user id: "+ tempUser.getId());
+    	System.out.println("current user id: "+ currentUserId);
+    	if(tempUser.getId() == currentUserId) {
+    		session.setAttribute("current_user", "true"); 
+    	} else {
+    		session.setAttribute("current_user", "false"); 
+    	}
     	model.addAttribute(book);
     	return "bookDetail.jsp";
     }
