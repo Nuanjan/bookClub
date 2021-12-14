@@ -8,10 +8,13 @@ import javax.validation.Valid;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import com.ns.bookclub.models.Book;
 import com.ns.bookclub.models.LoginUser;
@@ -35,6 +38,8 @@ public class MainController {
         model.addAttribute("newLogin", new LoginUser());
         return "index.jsp";
     }
+    
+  // ==================== Log in and Register ==============================
     
     @PostMapping("/register")
     public String register(@Valid @ModelAttribute("newUser") User newUser, 
@@ -60,21 +65,55 @@ public class MainController {
         return "redirect:/books";
     }
     
+    // ===================== Log Out Route ===========================
+    @GetMapping("/logout")
+    public String  logout(HttpSession session) {
+    	session.invalidate();
+    	return "redirect:/";
+    }
+    
+  
+    // ======================== Get Routes ============================
+    
     @GetMapping("/books")
-    public String getUser(Model model, HttpSession session) {
+    public String getUser(Model model, HttpSession session, RedirectAttributes flash) {
+    	if(session.getAttribute("user_id") == null) {
+    		flash.addFlashAttribute("login", "Please Log in or Register before entering page");
+    		return "forbidden.jsp";
+    	}
     	Long id = (Long)session.getAttribute("user_id");
     	User user = userServ.findUser(id);
     	List<Book> books = bookServ.allBooks();
     	model.addAttribute("user", user);
     	model.addAttribute("books", books);
-    	
     	return "books.jsp";
+    	
     }
+    
+    @GetMapping("/books/{id}")
+    public String getBook(@PathVariable("id") Long id, Model model, HttpSession session) {
+    	if(session.getAttribute("user_id") == null) {
+    		return "forbidden.jsp";
+    	}
+    	Book book = bookServ.findBook(id);
+    	User tempUser = book.getUser();
+    	Long currentUserId = (Long)session.getAttribute("user_id");
+    	if(tempUser.getId().equals(currentUserId)) {
+    		session.setAttribute("current_user", "true"); 
+    	} else {
+    		session.setAttribute("current_user", "false"); 
+    	}
+    	model.addAttribute(book);
+    	return "bookDetail.jsp";
+    }
+    
+  // ========================Create Routes ================================
     @GetMapping("/books/new")
     public String newBook(@ModelAttribute("book") Book book, Model model, HttpSession session) {
     	Long id = (Long)session.getAttribute("user_id");
     	User user = userServ.findUser(id);
     	model.addAttribute("user", user);
+    	
     	return "newBook.jsp";
     }
     
@@ -94,22 +133,40 @@ public class MainController {
     	}
     }
     
-    @GetMapping("/books/{id}")
-    public String getBook(@PathVariable("id") Long id, Model model, HttpSession session) {
+    
+    
+    // ======================= Edit Routes ==========================
+    @GetMapping("/books/{id}/edit")
+    public String editBook(@PathVariable("id") Long id, Model model) {
     	Book book = bookServ.findBook(id);
-    	User tempUser = book.getUser();
-    	Long currentUserId = (Long)session.getAttribute("user_id");
-    	System.out.println("temp user id: "+ tempUser.getId());
-    	System.out.println("current user id: "+ currentUserId);
-    	if(tempUser.getId() == currentUserId) {
-    		session.setAttribute("current_user", "true"); 
-    	} else {
-    		session.setAttribute("current_user", "false"); 
+    	model.addAttribute("book", book);
+    	return "editBook.jsp";
+    }
+    
+    @PutMapping("/books/{id}/update")
+    public String updateBook(@Valid @ModelAttribute("book") Book book, BindingResult result
+    		, HttpSession session) {
+    	if(session.getAttribute("user_id") == null) {
+    		return "forbidden.jsp";
     	}
-    	model.addAttribute(book);
-    	return "bookDetail.jsp";
+   
+    	if(result.hasErrors()) {
+    		return "editBook.jsp";
+    	} else {
+    		bookServ.saveBook(book);
+    		return "redirect:/books";
+    	}
     }
     
     
+   // ===========================Delete Routes ===========================
+    @DeleteMapping("/delete/{id}")
+    public String deleteBook(@PathVariable("id") Long id, HttpSession session) {
+    	if(session.getAttribute("user_id") == null) {
+    		return "forbidden.jsp";
+    	}
+    	bookServ.deleteBook(id);
+    	return "redirect:/books";
+    }
     
 }

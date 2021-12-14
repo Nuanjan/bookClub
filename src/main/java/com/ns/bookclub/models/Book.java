@@ -33,7 +33,7 @@ public class Book {
 	private String author;
 	
 	@NotNull
-	@Size(min=5, message="Your thoughts must be at least 5 characters long!")
+	@Size(min=5, max=1000,message="Your thoughts must be at least 5  or less than 1000 characters long!")
 	private String thoughts;
 	
 	

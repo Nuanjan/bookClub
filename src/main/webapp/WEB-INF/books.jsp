@@ -23,9 +23,9 @@
 </head>
 <body>
     <div class="container"> <!-- Beginning of Container -->
-    <div class="d-flex justify-content-between">
+    <div class="d-flex justify-content-between align-items-center">
         <h1>Welcome <c:out value="${user.userName}"></c:out></h1>
-        <a href="/">Log Out</a>
+        <a href="/logout" class="btn btn-dark">Log Out</a>
     </div>
     <div class="d-flex justify-content-between">
     <h4>Books from everyone</h4>
@@ -47,7 +47,7 @@
   			<tbody>
 			    <tr>
 			      <td><c:out value="${book.id}"></c:out></td>
-			      <td><a href="/books/${book.id}"><c:out value="${book.title}"></c:out></a></td>
+			      <td><a href="/books/${book.id}" class="text-info"><c:out value="${book.title}"></c:out></a></td>
 			      <td><c:out value="${book.author}"></c:out></td>
 			      <td><c:out value="${book.user.userName}"></c:out></td>
 			    </tr>

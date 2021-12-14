@@ -13,7 +13,7 @@
 <html>
 <head>
 <meta charset="UTF-8">
-<title>Title Here</title>
+<title>Book Detail</title>
   <!-- Bootstrap -->
 <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" 
       rel="stylesheet" 
@@ -60,6 +60,17 @@
     		<div class="col">
     			<a href="/books">back to the shelves</a>
     		</div>
+    	</div>
+    	<div>
+    		<c:if test="${sessionScope.current_user == 'true'}">
+    		<div class="d-flex">
+    			<a href="/books/${book.id}/edit" class="btn btn-warning mx-3">Edit</a>
+    			<form action="/delete/${book.id}" method="post">
+    				<input type="hidden" name="_method" value="delete">
+    				<input type="submit" value="Delete" class="btn btn-danger" />
+    			</form>
+    		</div>
+    		</c:if>
     	</div>
     </div> <!-- End of Container -->
 </body>

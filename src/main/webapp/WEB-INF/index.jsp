@@ -24,6 +24,7 @@
 <body>
     <div class="container"> <!-- Beginning of Container -->
     <div class="row">
+    <p><c:out value="${login}"></c:out></p>
     <div class="col">
     <h1>Register</h1>
        <form:form action="/register" method="post" modelAttribute="newUser">
